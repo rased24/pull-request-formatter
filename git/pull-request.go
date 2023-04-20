@@ -2,7 +2,7 @@ package git
 
 import "time"
 
-type PullRequests struct {
+type PullRequest struct {
 	URL                string        `json:"url"`
 	ID                 int           `json:"id"`
 	NodeID             string        `json:"node_id"`

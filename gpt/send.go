@@ -13,7 +13,7 @@ func Send(prompt string) (result string, err error) {
 		Model:       config.OpenAIModel,
 		Prompt:      prompt,
 		MaxTokens:   config.OpenAIMaxTokens,
-		Temperature: 0.7,
+		Temperature: config.OpenAITemperature,
 	})
 
 	req, err := http.NewRequest("POST", "https://api.openai.com/v1/completions", bytes.NewBuffer(buff))

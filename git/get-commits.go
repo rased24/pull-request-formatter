@@ -10,7 +10,11 @@ import (
 	"pull-request-formatter/config"
 )
 
+var pr PullRequest
+
 func GetCommits() (commits []CommitBody, err error) {
+	Init()
+
 	// get the pull request number for the branch.
 	apiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls?base=%s", config.GitOwner, config.GitRepo, config.GitBranch)
 
@@ -18,11 +22,8 @@ func GetCommits() (commits []CommitBody, err error) {
 	if err != nil {
 		return
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", config.GitAccessToken))
-	req.Header.Set("Accept", "application/vnd.github.v3+json")
-	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return
 	}
@@ -34,7 +35,7 @@ func GetCommits() (commits []CommitBody, err error) {
 		}
 	}(res.Body)
 
-	var pullRequests []PullRequests
+	var pullRequests []PullRequest
 
 	err = json.NewDecoder(res.Body).Decode(&pullRequests)
 	if err != nil {
@@ -45,17 +46,15 @@ func GetCommits() (commits []CommitBody, err error) {
 		return commits, errors.New(fmt.Sprintf("No pull requests found for branch %s\n", config.GitBranch))
 	}
 
+	pr = pullRequests[0]
+
 	// get the commits associated with the pull request.
-	req, err = http.NewRequest("GET", pullRequests[0].Links.Commits.Href, nil)
+	req, err = http.NewRequest("GET", pr.Links.Commits.Href, nil)
 	if err != nil {
 		return
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", config.GitAccessToken))
-	req.Header.Set("Accept", "application/vnd.github.v3+json")
-	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
-
-	res, err = http.DefaultClient.Do(req)
+	res, err = client.Do(req)
 	if err != nil {
 		return
 	}

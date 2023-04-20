@@ -14,6 +14,7 @@ var GitAccessToken string
 var OpenAISecret string
 var OpenAIModel string
 var OpenAIMaxTokens int
+var OpenAITemperature float64
 
 func Init() (err error) {
 	err = godotenv.Load(".env")
@@ -30,6 +31,11 @@ func Init() (err error) {
 	OpenAIModel = os.Getenv("OPEN_AI_MODEL")
 
 	OpenAIMaxTokens, err = strconv.Atoi(os.Getenv("OPEN_AI_MAX_TOKENS"))
+	if err != nil {
+		return
+	}
+
+	OpenAITemperature, err = strconv.ParseFloat(os.Getenv("OPEN_AI_TEMPERATURE"), 64)
 
 	return
 }
