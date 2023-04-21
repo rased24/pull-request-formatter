@@ -1,4 +1,4 @@
-package gpt
+package openai
 
 type Request struct {
 	Model       string  `json:"model"`

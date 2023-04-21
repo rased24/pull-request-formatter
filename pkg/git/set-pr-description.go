@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"pull-request-formatter/config"
+	"pull-request-formatter/pkg/config"
 )
 
 func SetPRDescription(changelog string) (err error) {
@@ -28,7 +28,7 @@ func SetPRDescription(changelog string) (err error) {
 		return
 	}
 
-	_, err = client.Do(req)
+	_, err = send(req)
 
 	return
 }

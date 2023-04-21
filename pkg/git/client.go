@@ -2,7 +2,7 @@ package git
 
 import (
 	"net/http"
-	"pull-request-formatter/config"
+	"pull-request-formatter/pkg/config"
 )
 
 var client *http.Client

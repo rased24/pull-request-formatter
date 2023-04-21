@@ -2,7 +2,7 @@ package git
 
 import "time"
 
-type CommitBody struct {
+type commitBody struct {
 	Sha         string      `json:"sha"`
 	NodeID      string      `json:"node_id"`
 	Commit      commit      `json:"commit"`

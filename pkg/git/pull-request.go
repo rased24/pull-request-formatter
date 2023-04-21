@@ -2,7 +2,7 @@ package git
 
 import "time"
 
-type PullRequest struct {
+type pullRequest struct {
 	URL                string        `json:"url"`
 	ID                 int           `json:"id"`
 	NodeID             string        `json:"node_id"`
@@ -14,7 +14,7 @@ type PullRequest struct {
 	State              string        `json:"state"`
 	Locked             bool          `json:"locked"`
 	Title              string        `json:"title"`
-	User               User          `json:"user"`
+	User               user          `json:"user"`
 	Body               interface{}   `json:"body"`
 	CreatedAt          time.Time     `json:"created_at"`
 	UpdatedAt          time.Time     `json:"updated_at"`
@@ -33,21 +33,21 @@ type PullRequest struct {
 	ReviewCommentURL   string        `json:"review_comment_url"`
 	CommentsURL        string        `json:"comments_url"`
 	StatusesURL        string        `json:"statuses_url"`
-	Head               Head          `json:"head"`
-	Base               Base          `json:"base"`
-	Links              Links         `json:"_links"`
+	Head               head          `json:"head"`
+	Base               base          `json:"base"`
+	Links              links         `json:"_links"`
 	AuthorAssociation  string        `json:"author_association"`
 	AutoMerge          interface{}   `json:"auto_merge"`
 	ActiveLockReason   interface{}   `json:"active_lock_reason"`
 }
 
-type Repo struct {
+type repo struct {
 	ID                       int           `json:"id"`
 	NodeID                   string        `json:"node_id"`
 	Name                     string        `json:"name"`
 	FullName                 string        `json:"full_name"`
 	Private                  bool          `json:"private"`
-	Owner                    User          `json:"owner"`
+	Owner                    user          `json:"owner"`
 	HTMLURL                  string        `json:"html_url"`
 	Description              interface{}   `json:"description"`
 	Fork                     bool          `json:"fork"`
@@ -123,7 +123,7 @@ type Repo struct {
 	DefaultBranch            string        `json:"default_branch"`
 }
 
-type User struct {
+type user struct {
 	Login             string `json:"login"`
 	ID                int    `json:"id"`
 	NodeID            string `json:"node_id"`
@@ -144,33 +144,33 @@ type User struct {
 	SiteAdmin         bool   `json:"site_admin"`
 }
 
-type Link struct {
+type link struct {
 	Href string `json:"href"`
 }
 
-type Links struct {
-	Self           Link `json:"self"`
-	HTML           Link `json:"html"`
-	Issue          Link `json:"issue"`
-	Comments       Link `json:"comments"`
-	ReviewComments Link `json:"review_comments"`
-	ReviewComment  Link `json:"review_comment"`
-	Commits        Link `json:"commits"`
-	Statuses       Link `json:"statuses"`
+type links struct {
+	Self           link `json:"self"`
+	HTML           link `json:"html"`
+	Issue          link `json:"issue"`
+	Comments       link `json:"comments"`
+	ReviewComments link `json:"review_comments"`
+	ReviewComment  link `json:"review_comment"`
+	Commits        link `json:"commits"`
+	Statuses       link `json:"statuses"`
 }
 
-type Head struct {
+type head struct {
 	Label string `json:"label"`
 	Ref   string `json:"ref"`
 	Sha   string `json:"sha"`
-	User  User   `json:"user"`
-	Repo  Repo   `json:"repo"`
+	User  user   `json:"user"`
+	Repo  repo   `json:"repo"`
 }
 
-type Base struct {
+type base struct {
 	Label string `json:"label"`
 	Ref   string `json:"ref"`
 	Sha   string `json:"sha"`
-	User  User   `json:"user"`
-	Repo  Repo   `json:"repo"`
+	User  user   `json:"user"`
+	Repo  repo   `json:"repo"`
 }
