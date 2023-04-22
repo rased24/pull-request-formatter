@@ -8,8 +8,8 @@ import (
 )
 
 // SaveToFile - gives the ability to save user generated messages to the log file
-func SaveToFile(message string) {
-	file, err := os.OpenFile("error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+func SaveToFile(message, fileName string) {
+	file, err := os.OpenFile(fmt.Sprintf("logs/%s.log", fileName), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -23,8 +23,12 @@ func SaveToFile(message string) {
 
 }
 
+func errorLog(message string) {
+	SaveToFile(message, "error")
+}
+
 func Error(err error) {
-	SaveToFile(err.Error())
+	errorLog(err.Error())
 
 	//----------------INTEGRATIONS-------------------//(NOTE: The integrations will only work if the required params configured in the .env file)
 

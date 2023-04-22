@@ -33,10 +33,10 @@ func Send(prompt string) (result string, err error) {
 		return
 	}
 
-	return handleResponse(res)
+	return getChangelog(res)
 }
 
-func handleResponse(res *http.Response) (result string, err error) {
+func getChangelog(res *http.Response) (changelog string, err error) {
 	if res.StatusCode == http.StatusOK {
 		var successBody successResponse
 
@@ -45,7 +45,7 @@ func handleResponse(res *http.Response) (result string, err error) {
 			return
 		}
 
-		result = successBody.Choices[0].Text
+		changelog = successBody.Choices[0].Text
 
 		return
 	}
