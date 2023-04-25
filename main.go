@@ -55,6 +55,11 @@ func getPrompt() (prompt string, err error) {
 			continue
 		}
 
+		//check if the commit is just a followup commit of the previous ones
+		if strings.HasPrefix(message, "@ignore") {
+			continue
+		}
+
 		// remove links from the message
 		re := regexp.MustCompile(`\bhttps?://\S+`)
 		message = re.ReplaceAllString(message, "")
