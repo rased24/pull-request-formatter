@@ -5,6 +5,8 @@ import (
 	"pull-request-formatter/pkg/git"
 	"pull-request-formatter/pkg/log"
 	"pull-request-formatter/pkg/openai"
+	"regexp"
+	"strings"
 )
 
 func main() {
@@ -46,7 +48,21 @@ func getPrompt() (prompt string, err error) {
 	prompt = config.PromptPreText
 
 	for _, c := range commits {
-		prompt += "\n - " + c.Commit.Message
+		message := c.Commit.Message
+
+		// check if message starts with "Merge branch" or "Merge pull request"
+		if strings.HasPrefix(message, "Merge branch") || strings.HasPrefix(message, "Merge pull request") {
+			continue
+		}
+
+		// remove links from the message
+		re := regexp.MustCompile(`\bhttps?://\S+`)
+		message = re.ReplaceAllString(message, "")
+
+		// remove all newlines from the message
+		message = strings.ReplaceAll(message, "\n", "")
+
+		prompt += "\n - " + message
 	}
 
 	prompt += "\n" + config.PromptAfterText
