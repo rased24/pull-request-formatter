@@ -66,13 +66,13 @@ func telegramSend(message string) (err error) {
 func telegramError() {
 	err := telegramSend("Changelog generation failed. Please, check the log file for details")
 	if err != nil {
-		SaveToFile(err.Error())
+		errorLog(err.Error())
 	}
 }
 
 func telegramSuccess() {
 	err := telegramSend("Changelog generation succeeded")
 	if err != nil {
-		SaveToFile(err.Error())
+		errorLog(err.Error())
 	}
 }
