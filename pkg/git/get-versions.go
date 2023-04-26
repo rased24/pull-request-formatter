@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 	"pull-request-formatter/pkg/config"
 	"regexp"
@@ -23,48 +21,83 @@ func GetVersions() (versions []version, err error) {
 
 	changedFolders := findFolders(files)
 
-	var req *http.Request
-	var res *http.Response
+	var reqOld *http.Request
+	var reqNew *http.Request
+	var resOld *http.Response
+	var resNew *http.Response
 
 	for _, folder := range changedFolders {
-		apiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/%s/%s/%s", config.GitOwner, config.GitRepo, config.FilePathToUpdate, folder, config.FileToUpdate)
+		oldBranch := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/%s/%s/%s", config.GitOwner, config.GitRepo, config.FilePathToUpdate, folder, config.FileToUpdate)
 
-		req, err = http.NewRequest("GET", apiUrl, nil)
+		newBranch := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/%s/%s/%s?ref=%s", config.GitOwner, config.GitRepo, config.FilePathToUpdate, folder, config.FileToUpdate, config.CommitBranch)
+
+		reqOld, err = http.NewRequest("GET", oldBranch, nil)
 		if err != nil {
 			return
 		}
 
-		res, err = send(req)
+		reqNew, err = http.NewRequest("GET", newBranch, nil)
 		if err != nil {
 			return
 		}
 
-		var initFile fileResponse
-
-		err = json.NewDecoder(res.Body).Decode(&initFile)
+		resOld, err = send(reqOld)
 		if err != nil {
 			return
 		}
 
-		err = res.Body.Close()
+		resNew, err = send(reqNew)
 		if err != nil {
 			return
 		}
 
-		decoded, err := base64.StdEncoding.DecodeString(initFile.Content)
+		var initFileNew fileResponse
+		var initFileOld fileResponse
+
+		re := regexp.MustCompile(config.VersionRegex)
+
+		err = json.NewDecoder(resNew.Body).Decode(&initFileNew)
+		if err != nil {
+			return
+		}
+
+		err = resNew.Body.Close()
+		if err != nil {
+			return
+		}
+
+		decodedNew, err := base64.StdEncoding.DecodeString(initFileNew.Content)
 		if err != nil {
 			return nil, err
 		}
 
-		re := regexp.MustCompile(config.VersionRegex)
+		err = json.NewDecoder(resOld.Body).Decode(&initFileOld)
+		if err != nil {
+			return nil, err
+		}
 
-		match := re.FindStringSubmatch(string(decoded))
+		err = resNew.Body.Close()
+		if err != nil {
+			return nil, err
+		}
 
-		if len(match) == 0 {
+		decodedOld, err := base64.StdEncoding.DecodeString(initFileOld.Content)
+		if err != nil {
+			return nil, err
+		}
+
+		matchNew := re.FindStringSubmatch(string(decodedNew))
+		matchOld := re.FindStringSubmatch(string(decodedOld))
+
+		if len(matchNew) == 0 || len(matchOld) == 0 {
 			fmt.Println("malformed")
 		}
 
-		oldVersion := match[1]
+		if matchNew[1] != matchOld[1] {
+			continue
+		}
+
+		oldVersion := matchNew[1]
 
 		newVersion, err := getNextVersion(oldVersion)
 		if err != nil {
@@ -90,10 +123,10 @@ func GetVersions() (versions []version, err error) {
 		}
 		versions = append(versions, updateLog)
 
-		newBody := strings.Replace(string(decoded), oldVersion, newVersion, 1)
+		newBody := strings.Replace(string(decodedNew), oldVersion, newVersion, 1)
 
-		commit := updatedFileBody{
-			Sha:     initFile.Sha,
+		_ = updatedFileBody{
+			Sha:     initFileNew.Sha,
 			Message: fmt.Sprintf("Version increase for %s from %s to %s", updateLog.Name, updateLog.OldVersion, updateLog.NewVersion),
 			Committer: committer{
 				Name:  config.CommitterName,
@@ -103,7 +136,7 @@ func GetVersions() (versions []version, err error) {
 			Content: base64.StdEncoding.EncodeToString([]byte(newBody)),
 		}
 
-		updateContent(commit, initFile.Path)
+		//updateContent(commit, initFile.Path)
 	}
 
 	return
@@ -137,26 +170,36 @@ func getFiles() (files []fileBody, err error) {
 		return
 	}
 
-	apiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls/%d/files", config.GitOwner, config.GitRepo, pr.Number)
+	page := 1
 
-	req, err := http.NewRequest("GET", apiUrl, nil)
-	if err != nil {
-		return
-	}
+	var file []fileBody
 
-	res, err := send(req)
-	if err != nil {
-		return
-	}
+	for true {
+		apiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls/%d/files?page=%d", config.GitOwner, config.GitRepo, pr.Number, page)
 
-	defer func(Body io.ReadCloser) {
-		err = Body.Close()
+		req, err := http.NewRequest("GET", apiUrl, nil)
 		if err != nil {
-			log.Println(err)
+			return nil, err
 		}
-	}(res.Body)
 
-	err = json.NewDecoder(res.Body).Decode(&files)
+		res, err := send(req)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.NewDecoder(res.Body).Decode(&file)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(file) == 0 {
+			break
+		}
+
+		files = append(files, file...)
+
+		page++
+	}
 
 	return
 }
