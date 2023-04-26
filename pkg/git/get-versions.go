@@ -125,7 +125,7 @@ func GetVersions() (versions []version, err error) {
 
 		newBody := strings.Replace(string(decodedNew), oldVersion, newVersion, 1)
 
-		_ = updatedFileBody{
+		commit := updatedFileBody{
 			Sha:     initFileNew.Sha,
 			Message: fmt.Sprintf("Version increase for %s from %s to %s", updateLog.Name, updateLog.OldVersion, updateLog.NewVersion),
 			Committer: committer{
@@ -136,7 +136,7 @@ func GetVersions() (versions []version, err error) {
 			Content: base64.StdEncoding.EncodeToString([]byte(newBody)),
 		}
 
-		//updateContent(commit, initFile.Path)
+		updateContent(commit, initFileNew.Path)
 	}
 
 	return
