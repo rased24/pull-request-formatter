@@ -16,6 +16,19 @@ var GitAccessToken string
 var PromptPreText string
 var PromptAfterText string
 
+var VersionsLogPreText string
+var VersionsLogPostText string
+
+var CommitBranch string
+var CommitterName string
+var CommitterEmail string
+
+var FilePathToUpdate string
+var FileToUpdate string
+
+var VersionRegex string
+var PatternRegex string
+
 var OpenAISecret string
 var OpenAIModel string
 var OpenAIMaxTokens int
@@ -39,6 +52,20 @@ func Init() (err error) {
 
 	PromptPreText = os.Getenv("PROMPT_PRETEXT")
 	PromptAfterText = os.Getenv("PROMPT_POSTTEXT")
+
+	VersionsLogPreText = os.Getenv("VERSIONS_LOG_PRETEXT")
+	VersionsLogPostText = os.Getenv("VERSIONS_LOG_POSTTEXT")
+
+	CommitBranch = os.Getenv("COMMIT_BRANCH")
+
+	FilePathToUpdate = os.Getenv("FILE_PATH_TO_UPDATE")
+	FileToUpdate = os.Getenv("FILE_TO_UPDATE")
+
+	CommitterName = os.Getenv("COMMITTER_NAME")
+	CommitterEmail = os.Getenv("COMMITTER_EMAIL")
+
+	VersionRegex = os.Getenv("VERSION_REGEX")
+	PatternRegex = os.Getenv("PATTERN_REGEX")
 
 	TgAccessToken = os.Getenv("TELEGRAM_ACCESS_TOKEN")
 	TgChatId = os.Getenv("TELEGRAM_CHAT_ID")

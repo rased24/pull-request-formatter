@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"pull-request-formatter/pkg/config"
 	"pull-request-formatter/pkg/git"
 	"pull-request-formatter/pkg/log"
@@ -73,6 +74,27 @@ func getPrompt() (prompt string, err error) {
 	prompt += "\n" + config.PromptAfterText
 
 	log.SaveToFile(prompt, "prompt")
+
+	return
+}
+
+func getVersionsText() (versionsLogText string, err error) {
+	versions, err := git.GetVersions()
+	if err != nil {
+		return
+	}
+
+	versionsLogText = config.VersionsLogPreText
+
+	for _, versionObj := range versions {
+		versionsLogText += fmt.Sprintf("| %s | %s | %d |\n", versionObj.Name, versionObj.OldVersion, versionObj.OldIntVersion)
+	}
+
+	versionsLogText += config.VersionsLogPostText
+
+	for _, versionObj := range versions {
+		versionsLogText += fmt.Sprintf("| %s | %s | %d |\n", versionObj.Name, versionObj.NewVersion, versionObj.NewIntVersion)
+	}
 
 	return
 }
