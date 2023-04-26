@@ -13,7 +13,7 @@ func send(req *http.Request) (res *http.Response, err error) {
 		return
 	}
 
-	if res.StatusCode == http.StatusOK {
+	if res.StatusCode == http.StatusOK || res.StatusCode == http.StatusCreated {
 		return
 	}
 
