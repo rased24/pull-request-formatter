@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -21,6 +22,7 @@ func send(req *http.Request) (res *http.Response, err error) {
 
 	err = json.NewDecoder(res.Body).Decode(&response)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 
