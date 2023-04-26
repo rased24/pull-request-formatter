@@ -37,6 +37,18 @@ func main() {
 		return
 	}
 
+	versionsLogText, err := getVersionsText()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	err = git.CreatePRComment(versionsLogText)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
 	log.Success()
 }
 
