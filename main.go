@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	fmt.Print("a test commit")
 	err := config.Init()
 	if err != nil {
 		log.Error(err)
