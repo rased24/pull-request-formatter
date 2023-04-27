@@ -63,7 +63,7 @@ func getPrompt() (prompt string, err error) {
 		}
 
 		//check if the commit is just a followup commit of the previous ones
-		if strings.HasPrefix(message, "@ignore") {
+		if strings.HasPrefix(message, "#ignore") {
 			continue
 		}
 
