@@ -37,13 +37,7 @@ func main() {
 		return
 	}
 
-	versionsLogText, err := getVersionsText()
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
-	err = git.CreatePRComment(versionsLogText)
+	err = createPrComment()
 	if err != nil {
 		log.Error(err)
 		return
@@ -69,7 +63,7 @@ func getPrompt() (prompt string, err error) {
 		}
 
 		//check if the commit is just a followup commit of the previous ones
-		if strings.HasPrefix(message, "@ignore") {
+		if strings.HasPrefix(message, "#ignore") {
 			continue
 		}
 
@@ -90,13 +84,18 @@ func getPrompt() (prompt string, err error) {
 	return
 }
 
-func getVersionsText() (versionsLogText string, err error) {
+func createPrComment() (err error) {
 	versions, err := git.GetVersions()
 	if err != nil {
 		return
 	}
 
-	versionsLogText = config.VersionsLogPreText
+	//if there are no changes present, the versions array will be empty, therefore, no need to add a pr comment
+	if len(versions) == 0 {
+		return
+	}
+
+	versionsLogText := config.VersionsLogPreText
 
 	for _, versionObj := range versions {
 		versionsLogText += fmt.Sprintf("| %s | %s | %d |\n", versionObj.Name, versionObj.OldVersion, versionObj.OldIntVersion)
@@ -108,5 +107,5 @@ func getVersionsText() (versionsLogText string, err error) {
 		versionsLogText += fmt.Sprintf("| %s | %s | %d |\n", versionObj.Name, versionObj.NewVersion, versionObj.NewIntVersion)
 	}
 
-	return
+	return git.CreatePRComment(versionsLogText)
 }
