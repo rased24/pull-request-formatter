@@ -127,7 +127,7 @@ func GetVersions() (versions []version, err error) {
 
 		commit := updatedFileBody{
 			Sha:     initFileNew.Sha,
-			Message: fmt.Sprintf("Version increase for %s from %s to %s", updateLog.Name, updateLog.OldVersion, updateLog.NewVersion),
+			Message: fmt.Sprintf("#ignore Version increase for %s from %s to %s", updateLog.Name, updateLog.OldVersion, updateLog.NewVersion),
 			Committer: committer{
 				Name:  config.CommitterName,
 				Email: config.CommitterEmail,
