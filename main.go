@@ -57,8 +57,8 @@ func getPrompt() (prompt string, err error) {
 	for _, c := range commits {
 		message := c.Commit.Message
 
-		// check if message starts with "Merge branch" or "Merge pull request"
-		if strings.HasPrefix(message, "Merge branch") || strings.HasPrefix(message, "Merge pull request") {
+		// check if message starts with "Merge branch" or "Merge pull request" or "Merge remote-tracking branch"
+		if strings.HasPrefix(message, "Merge branch") || strings.HasPrefix(message, "Merge pull request") || strings.HasPrefix(message, "Merge remote-tracking branch") {
 			continue
 		}
 
